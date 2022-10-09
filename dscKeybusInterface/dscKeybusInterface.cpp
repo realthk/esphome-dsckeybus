@@ -93,7 +93,7 @@ void dscKeybusInterface::begin(Stream & _stream,byte setClockPin, byte setReadPi
   // esp32 timer1 calls dscDataInterrupt() from dscClockInterrupt()
   #elif defined(ESP32)
   #if ESP_IDF_VERSION_MAJOR < 4
-  timer1 = timerBegin(0, 80, true);
+  timer1 = timerBegin(1, 80, true);
   timerStop(timer1);
   timerAttachInterrupt(timer1, & dscDataInterrupt, true);
   timerAlarmWrite(timer1, 250, true);
@@ -859,9 +859,12 @@ IRAM_ATTR
 dscKeybusInterface::processPendingQueue(byte cmd) {
 
   //process queued 05/0b/1b requests
-  if (inIdx == outIdx || (writeQueue[outIdx].partition > 4 && (cmd == 0x05 || cmd == 0x0A) ) || (cmd == 0x1B && writeQueue[outIdx].partition < 5)) return;
+  if (inIdx == outIdx || (writeQueue[outIdx].partition > 4 && (cmd == 0x05 || cmd ==
+ 0x0A) ) || (cmd == 0x1B && writeQueue[outIdx].partition < 5)) return;
+ 
+  // if (inIdx==outIdx) return;
     updateWriteBuffer((byte * ) writeQueue[outIdx].data,  writeQueue[outIdx].writeBit,writeQueue[outIdx].partition,writeQueue[outIdx].len, writeQueue[outIdx].alarm, writeQueue[outIdx].star); //populate write buffer and set ready to send flag
-  outIdx = (outIdx + 1) % writeQueueSize; // advance index to next record
+    outIdx = (outIdx + 1) % writeQueueSize; // advance index to next record
 }
 
 void

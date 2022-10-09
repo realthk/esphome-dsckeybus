@@ -201,7 +201,7 @@ class DSCkeybushome: public CustomMQTTDevice, public RealTimeClock {
 class DSCkeybushome { 
 #elif defined(ESP32)
 class DSCkeybushome: public CustomAPIDevice, public RealTimeClock {
-#elif defined(ESP8266)
+#else
 class DSCkeybushome: public CustomAPIDevice, public Component {  
 #endif
   public: DSCkeybushome(byte dscClockPin = 0, byte dscReadPin = 0, byte dscWritePin = 0): dscClockPin(dscClockPin),
@@ -910,7 +910,7 @@ public:
     if (!partition) partition = defaultPartition;
 //ESP_LOGD("test","code=%s,alarmCode=%s",code.c_str(),alarmCode);
 #if !defined(ARDUINO_MQTT)  
-    ESP_LOGD("debug","Setting Alarm state: %s ",state.c_str());
+    ESP_LOGD("debug","Setting Alarm state: %s to partition %d",state.c_str(),partition);
 #endif
     if (partitionStatus[partition - 1].locked) return;
  
