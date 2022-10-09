@@ -30,23 +30,26 @@ substitutions:
   expanderAddr2: "0" # 2nd expander emulator address to use . Set to 0 to disable. 
   
   #ESP32 Pins
-  dscClockPin: "22"
-  dscReadPin: "21"
-  dscWritePin: "18"
+  #dscClockPin: "22"
+  #dscReadPin: "21"
+  #dscWritePin: "18"
 
-  #ESP8266 Pins
+  #ESP8266 Pins 
   #dscClockPin: "5"
   #dscReadPin: "4"
   #dscWritePin: "15"  
+  dscClockPin: "D1"
+  dscReadPin: "D2"
+  dscWritePin: "D8"  
   
-  maxZones: "32" # maximum amount of zones your system supports
+  maxZones: "24" # maximum amount of zones your system supports
   
 esphome:
   name: $systemName
-  platform: ESP32
-  board: nodemcu-32s
-  #platform: ESP8266
-  #board: nodemcuv2
+  #platform: ESP32
+  #board: nodemcu-32s
+  platform: ESP8266
+  board: d1_mini_lite
 
   includes:
     # subdirectory path where custom component *.h and *.cpp files are located
@@ -55,6 +58,12 @@ esphome:
 wifi:
   ssid: !secret wifi_ssid
   password: !secret wifi_password
+  fast_connect: true
+
+  manual_ip:
+    static_ip: 192.168.8.19
+    gateway: 192.168.8.1
+    subnet: 255.255.255.0
 
   ap:
     ssid: "$systemName"
@@ -83,10 +92,13 @@ ota:
    on_begin:
     then:
       - switch.turn_off: connection_status_switch   
-   
+
+# D6 = GPIO12   
+# D7 = GPIO13   
 status_led:
   pin:
-    number: GPIO2
+#    number: GPIO12
+    number: D4
     inverted: no
 
 #comment if using ESP8266 to conserve memory    
@@ -195,13 +207,25 @@ custom_component:
         case 3: id(z3).publish_state(open); break;
         case 4: id(z4).publish_state(open); break;
         case 5: id(z5).publish_state(open); break;
-        case 6: id(z6).publish_state(open); break;
+        //case 6: id(z6).publish_state(open); break;
         case 7: id(z7).publish_state(open); break;
-        case 8: id(z8).publish_state(open); break;
+        //case 8: id(z8).publish_state(open); break;
         case 9: id(z9).publish_state(open); break;
         case 10: id(z10).publish_state(open); break;
         case 11: id(z11).publish_state(open); break;
+        case 12: id(z12).publish_state(open); break;
+        case 13: id(z13).publish_state(open); break;
+        case 14: id(z14).publish_state(open); break;
+        case 15: id(z15).publish_state(open); break;
+        case 16: id(z16).publish_state(open); break;
         case 17: id(z17).publish_state(open); break;
+        case 18: id(z18).publish_state(open); break;
+        case 19: id(z19).publish_state(open); break;
+        case 20: id(z20).publish_state(open); break;
+        case 21: id(z21).publish_state(open); break;
+        case 22: id(z22).publish_state(open); break;
+        case 23: id(z23).publish_state(open); break;
+        //case 24: id(z24).publish_state(open); break;
       } // add or delete any zone you need above. Add the coresponding sensor id in the binary_sensor section
     });
     
@@ -232,55 +256,138 @@ custom_component:
 # change the name to match your own zone configurations
 # if you don't want to delete a zone, you can also comment out the name: field to hide it from home assistant
 binary_sensor:
+  - platform: gpio
+    name: "Postbox entry"
+    device_class: door    
+    pin: 
+      number: D5
+      #inverted: false    
+      mode:
+        input: true
+        pullup: true      
+#    filters:
+#      - delayed_on: 20ms
+
+  - platform: gpio
+    name: "Postbox door"
+    device_class: door    
+    pin: 
+      number: D6
+      #inverted: false
+      mode:
+        input: true
+        pullup: true          
+
+  - platform: gpio
+    name: "Door spajz"
+    device_class: door    
+    pin: 
+      number: D7
+      #inverted: false
+      mode:
+        input: true
+        pullup: true          
+      
+
     #zone status open/close for each zone 
   - platform: template
     id: z1
-    name: "$systemName Front door(z1)"
-    device_class: door
+    name: "Gate bell"
+    device_class: sound
   - platform: template
     id: z2
-    name: "$systemName Garage door(z2)"
+    name: "Door gate"
     device_class: door
   - platform: template
     id: z3
-    name: "$systemName Back door(z3)"
+    name: "Door shed"
     device_class: door
   - platform: template
     id: z4
-    name: "$systemName Living room window(z4)"
-    device_class: window
-  - platform: template
-    id: z5
-    name: "$systemName Dining room window(z5)"
-    device_class: window
-  - platform: template
-    id: z6
-    name: "$systemName Family room window LF(z6)"
-    device_class: window
-  - platform: template
-    id: z7
-    name: "$systemName Family room window RF(z7)"
-    device_class: window
-  - platform: template
-    id: z8
-    name: "$systemName Basement windows(z8)"
-    device_class: window
-  - platform: template
-    id: z9
-    name: "$systemName Upstairs motion(z9)"
+    name: "Motion spajz"
     device_class: motion
   - platform: template
+    id: z5
+    name: "Motion kitchen"
+    device_class: door
+#  - platform: template
+#    id: z6
+#    name: "$systemName Family room window LF"
+#    device_class: window
+  - platform: template
+    id: z7
+    name: "Motion lobby"
+    device_class: motion
+#  - platform: template
+#    id: z8
+#    name: "$systemName Basement windows"
+#    device_class: window
+
+  - platform: template
+    id: z9
+    name: "Smoke bathroom"
+    device_class: smoke
+  - platform: template
     id: z10
-    name: "$systemName Basement motion(z10)"
+    name: "Motion THK"
     device_class: motion
   - platform: template
     id: z11
-    name: "$systemName Main floor motion(z11)"
+    name: "Motion kitchensink"
     device_class: motion
   - platform: template
+    id: z12
+    name: "Motion WC"
+    device_class: motion
+  - platform: template
+    id: z13
+    name: "Smoke THK"
+    device_class: smoke
+  - platform: template
+    id: z14
+    name: "Smoke livingroom"
+    device_class: smoke
+  - platform: template
+    id: z15
+    name: "Smoke spajz"
+    device_class: smoke
+  - platform: template
+    id: z16
+    name: "Raining"
+    device_class: moisture
+
+  - platform: template
     id: z17
-    name: "$systemName Test sensor(z17)"
-    device_class: motion    
+    name: "Door outside"
+    device_class: door
+  - platform: template
+    id: z18
+    name: "Door entrance"
+    device_class: door
+  - platform: template
+    id: z19
+    name: "Motion nappali"
+    device_class: motion
+  - platform: template
+    id: z20
+    name: "Motion nappali2"
+    device_class: motion
+  - platform: template
+    id: z21
+    name: "Motion Panka"
+    device_class: motion
+  - platform: template
+    id: z22
+    name: "Smoke Panka"
+    device_class: smoke
+  - platform: template
+    id: z23
+    name: "Motion bedroom"
+    device_class: motion
+#  - platform: template
+#    id: z24
+#    name: "$systemName Smoke bedroom"
+#    device_class: smoke   
     
   - platform: template
     id: rdy
