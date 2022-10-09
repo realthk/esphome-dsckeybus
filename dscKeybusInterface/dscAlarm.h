@@ -1473,7 +1473,8 @@ void update() override {
          if (lastStatus[partition] != dsc.status[partition]  ) {
 				lastStatus[partition]=dsc.status[partition];
 				char msg[50];
-				sprintf(msg,PSTR("%02X: %s"), dsc.status[partition], String(statusText(dsc.status[partition])).c_str());
+//				sprintf(msg,PSTR("%02X: %s"), dsc.status[partition], String(statusText(dsc.status[partition])).c_str());
+				sprintf(msg,PSTR("%s"), String(statusText(dsc.status[partition])).c_str());
 				partitionMsgChangeCallback(msg,partition+1);
 
         }
@@ -3908,7 +3909,7 @@ if (showEvent)
   {
     switch (statusCode) {
         case 0x01: return F("Ready");
-        case 0x02: return F("Stay zones open");
+        case 0x02: return F("Zónaérzékelés");
         case 0x03: return F("Zones open");
         case 0x04: return F("Armed stay");
         case 0x05: return F("Armed away");
