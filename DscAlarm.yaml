@@ -225,7 +225,7 @@ custom_component:
         case 21: id(z21).publish_state(open); break;
         case 22: id(z22).publish_state(open); break;
         case 23: id(z23).publish_state(open); break;
-        //case 24: id(z24).publish_state(open); break;
+        case 24: id(z24).publish_state(open); break;
       } // add or delete any zone you need above. Add the coresponding sensor id in the binary_sensor section
     });
     
@@ -384,10 +384,10 @@ binary_sensor:
     id: z23
     name: "Motion bedroom"
     device_class: motion
-#  - platform: template
-#    id: z24
-#    name: "$systemName Smoke bedroom"
-#    device_class: smoke   
+  - platform: template
+    id: z24
+    name: "$systemName Smoke bedroom"
+    device_class: smoke   
     
   - platform: template
     id: rdy
