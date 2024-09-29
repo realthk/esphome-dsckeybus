@@ -42,7 +42,7 @@ substitutions:
   dscReadPin: "D2"
   dscWritePin: "D8"  
   
-  maxZones: "24" # maximum amount of zones your system supports
+  maxZones: "32" # maximum amount of zones your system supports
   
 esphome:
   name: $systemName
@@ -125,6 +125,7 @@ custom_component:
        switch(partition) {
          case 1: id(p1).publish_state(statusCode); break;
          case 2: id(p2).publish_state(statusCode); break;
+         case 3: id(p3).publish_state(statusCode); break;
       } 
     });
     
@@ -132,6 +133,7 @@ custom_component:
        switch(partition) {
          case 1: id(m1).publish_state(msg); break;
          case 2: id(m2).publish_state(msg); break;
+         case 3: id(m3).publish_state(msg); break;
       } // if you only have one partition, remove the case 2 statement  and corresponding p2 sensor. You can also add more partitions if needed
     });    
 
@@ -157,6 +159,12 @@ custom_component:
             case armStatus: id(arm_2).publish_state(open);break;
             default: break;
           };break;
+        case 3: //partition 3 armed/ready
+          switch(ps) {        
+            case rdyStatus: id(rdy_3).publish_state(open);break;
+            case armStatus: id(arm_3).publish_state(open);break;
+            default: break;
+          };break;
 
       };
     });
@@ -169,6 +177,7 @@ custom_component:
         switch(partition) {
             case 1: id(line1).publish_state(msg);break;
             case 2: id(line1_2).publish_state(msg);break;            
+            case 3: id(line1_3).publish_state(msg);break;            
         }
     });
     
@@ -176,6 +185,7 @@ custom_component:
         switch(partition) {    
            case 1: id(line2).publish_state(msg);break;
            case 2: id(line2_2).publish_state(msg);break;           
+           case 3: id(line2_3).publish_state(msg);break;           
         }            
     });
     DSCkeybus->onEventInfo([&](std::string msg) {
@@ -186,6 +196,7 @@ custom_component:
         switch(partition) {    
             case 1: id(beeps).publish_state(beep);break; 
             case 2: id(beeps_2).publish_state(beep);break;            
+            case 3: id(beeps_3).publish_state(beep);break;            
         }
     });    
     
@@ -193,6 +204,7 @@ custom_component:
       switch (partition) {
           case 1: id(f1).publish_state(open); break;
           case 2: id(f2).publish_state(open); break;          
+          case 3: id(f3).publish_state(open); break;          
       }
     }); 
     
@@ -226,6 +238,12 @@ custom_component:
         case 22: id(z22).publish_state(open); break;
         case 23: id(z23).publish_state(open); break;
         case 24: id(z24).publish_state(open); break;
+        case 25: id(z25).publish_state(open); break;
+        case 26: id(z26).publish_state(open); break;
+        case 27: id(z27).publish_state(open); break;
+        case 28: id(z28).publish_state(open); break;
+        case 29: id(z29).publish_state(open); break;
+        case 30: id(z30).publish_state(open); break;
       } // add or delete any zone you need above. Add the coresponding sensor id in the binary_sensor section
     });
     
@@ -264,9 +282,9 @@ binary_sensor:
       #inverted: false    
       mode:
         input: true
-        pullup: true      
-#    filters:
-#      - delayed_on: 20ms
+        pullup: false      
+    filters:
+      - delayed_on: 50ms
 
   - platform: gpio
     name: "Postbox door"
@@ -276,7 +294,9 @@ binary_sensor:
       #inverted: false
       mode:
         input: true
-        pullup: true          
+        pullup: false          
+    filters:
+      - delayed_on: 50ms
 
   - platform: gpio
     name: "Door spajz"
@@ -286,7 +306,9 @@ binary_sensor:
       #inverted: false
       mode:
         input: true
-        pullup: true          
+        pullup: false          
+    filters:
+      - delayed_on: 50ms
       
 
     #zone status open/close for each zone 
@@ -386,8 +408,32 @@ binary_sensor:
     device_class: motion
   - platform: template
     id: z24
-    name: "$systemName Smoke bedroom"
+    name: "Smoke bedroom"
     device_class: smoke   
+  - platform: template
+    id: z25
+    name: "Workshop door"
+    device_class: door    
+  - platform: template
+    id: z26
+    name: "Garage door Panka"
+    device_class: garage_door    
+  - platform: template
+    id: z27
+    name: "Garage door THK"
+    device_class: garage_door    
+  - platform: template
+    id: z28
+    name: "Motion garage 1"
+    device_class: motion
+  - platform: template
+    id: z29
+    name: "Motion garage 2"
+    device_class: motion
+  - platform: template
+    id: z30
+    name: "Smoke garage"
+    device_class: smoke    
     
   - platform: template
     id: rdy
@@ -404,6 +450,14 @@ binary_sensor:
   - platform: template
     id: arm_2
     name: "$systemName Partition 2 Armed"    
+
+  - platform: template
+    id: rdy_3
+    name: "$systemName Partition 3 Ready"
+
+  - platform: template
+    id: arm_3
+    name: "$systemName Partition 3 Armed"    
 
     #panel trouble status on/off
   - platform: template
@@ -440,7 +494,13 @@ binary_sensor:
     id: f2
     device_class: safety
     name: "$systemName Fire partition 2 Status"    
-    
+
+    #fire alarm on/off
+  - platform: template
+    id: f3
+    device_class: safety
+    name: "$systemName Fire partition 3 Status"    
+
 #relay PGM channels. Will show the state of the activate relay channel on/off
 #uncomment the name: field if you wish to see it in home assistant
   - platform: template
@@ -503,6 +563,11 @@ text_sensor:
     id: p2
     name: "$systemName Partition 2 Status " # uncomment to show in home assistant.  
     icon: "mdi:shield"  
+  - platform: template
+    id: p3
+    name: "$systemName Partition 3 Status " # uncomment to show in home assistant.  
+    icon: "mdi:shield"  
+
     # more verbose message regarding the partition status. ie zones open, bypassed, etc
 
   - platform: template
@@ -512,6 +577,10 @@ text_sensor:
   - platform: template
     id: m2
     name: "$systemName Partition 2 Msg " # uncomment to show in home assistant
+    icon: "mdi:alert-box"
+  - platform: template
+    id: m3
+    name: "$systemName Partition 3 Msg " # uncomment to show in home assistant
     icon: "mdi:alert-box"
    
   - platform: template
@@ -530,6 +599,14 @@ text_sensor:
     id: line2_2
     name: "$systemName line2 partition 2"
     icon: "mdi:alert-box" 
+  - platform: template
+    id: line1_3
+    name: "$systemName line1 partition 3"
+    icon: "mdi:alert-box"
+  - platform: template
+    id: line2_3
+    name: "$systemName line2 partition 3"
+    icon: "mdi:alert-box" 
     
   - platform: template
     id: event
@@ -543,6 +620,10 @@ text_sensor:
   - platform: template
     id: beeps_2
     name: "$systemName partition 2 beeps"
+    icon: "mdi:alert-box"   
+  - platform: template
+    id: beeps_3
+    name: "$systemName partition 3 beeps"
     icon: "mdi:alert-box"   
     
   - platform: template
