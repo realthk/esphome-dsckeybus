@@ -71,22 +71,22 @@ wifi:
 
 logger:
   baud_rate: 115200
-  level: DEBUG
+#  level: DEBUG
+  level: WARN
 
 ##API communications - ensure the mqtt: section is commented if using this protocol
-api:
-   password: !secret api_password  
-   #encryption:         
-     #key: !secret encryption_key
+#api:
+#   password: !secret api_password  
      
 ##MQTT communications - ensure the api: section is commented if using this protocol
-#mqtt:
-  #broker: xxx.xxx.xxx.xxx #your mqtt broker address
-  #port: 1883  
-  #username: mqttuser #your mqtt user name
-  #password: !secret mqtt_password #your mqtt user pass
+mqtt:
+  broker: 192.168.8.123 #your mqtt broker address
+  port: 1883  
+  username: !secret mqtt_username #your mqtt user name
+  password: !secret mqtt_password #your mqtt user pass
   
 ota:
+   #platform: esphome
    password: !secret ota_password
    safe_mode: True
    on_begin:
@@ -331,19 +331,11 @@ binary_sensor:
   - platform: template
     id: z5
     name: "Motion kitchen"
-    device_class: door
-#  - platform: template
-#    id: z6
-#    name: "$systemName Family room window LF"
-#    device_class: window
+    device_class: motion
   - platform: template
     id: z7
     name: "Motion lobby"
     device_class: motion
-#  - platform: template
-#    id: z8
-#    name: "$systemName Basement windows"
-#    device_class: window
 
   - platform: template
     id: z9
